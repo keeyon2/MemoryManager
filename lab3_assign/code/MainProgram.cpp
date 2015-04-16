@@ -63,8 +63,20 @@ int main(int argc, char **argv)
         }
     }
 
-    // Create Frame and Page Table
+    // Random Number Grabber
+    RandomNumberGrabber* RandomNumberObject = new RandomNumberGrabber(argv[argc - 1]);
+    
+    ifstream stream;
+    stream.open(argv[argc - 1]);
 
+
+
+    // Read InputFile
+    ReadUntilInstruction();
+    while(!
+
+    // Create Frame and Page Table
+    
 
     // Set Algorithm
     switch(algorithm)
@@ -101,7 +113,105 @@ int main(int argc, char **argv)
 
 
     }
-
     // Printing out to test
+}
 
+void ReadUntilInstruction() {
+    char c;
+    int instruct;
+    int read_write;
+
+    ReadUntilCharacter();
+
+    if (PeekEnd())
+    {
+        // Error
+    }
+
+    while(!PeekEnd())
+    {
+        c = stream.peek();
+        if (c == '#')
+        {
+            ReadUntilNewLine();
+            ReadUntilCharacter();
+        }
+
+        else if(isdigit(c))
+        {
+            return;
+        }
+    }
+}
+
+
+int ExtractNumber() {
+    string number;
+    char c;
+    ReadUntilCharacter();
+
+    // If we have readed End of the file Expect Number
+    if (PeekEnd())
+    {
+        //Error
+    }
+
+    while (!PeekEnd())
+    {
+        stream.get(c);
+        if ((c != ' ') && (c != '\t') && (c != '\n'))
+        {
+            if (!isdigit(c))
+            {
+
+                cout << "SHOULD BE DIGIT" << endl;
+            }
+
+            number += c;
+        }
+        else
+            break;
+    }
+    return atoi(number.c_str());
+}
+
+void ReadUntilCharacter(){
+    char c;
+    while(!PeekEnd())
+    {
+        c = stream.peek();
+        if ((c == ' ') || (c == '\t') || (c == '\n'))
+        {
+            stream.get(c);
+        }
+        else
+            return;
+    }
+    if (PeekEnd())
+    {
+        //Reset to the start of the file
+        return;
+    }
+}
+
+bool Scheduler::PeekEnd() {
+    return (stream.peek(), stream.eof());
+}
+
+void ReadUntilNewline() {
+    char c:
+    while(!PeekEnd())
+    {
+        c = stream.get(c);
+        if (c != '\n')
+        {
+            stream.get(c);
+        }
+        else
+            return;
+    }
+    if(PeekEnd())
+    {
+        return;
+    }
 }
