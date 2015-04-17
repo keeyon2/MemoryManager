@@ -62,21 +62,11 @@ int main(int argc, char **argv)
                 algorithm = 'l';
         }
     }
-
-    // Random Number Grabber
-    RandomNumberGrabber* RandomNumberObject = new RandomNumberGrabber(argv[argc - 1]);
-    
-    ifstream stream;
-    stream.open(argv[argc - 1]);
+    char* input_file = argv[argc - 2];
+    char* random_file = argv[argc - 1];
 
 
-
-    // Read InputFile
-    ReadUntilInstruction();
-    while(!
-
-    // Create Frame and Page Table
-    
+    Organizer (input_file, random_file, options, algorithm, num_of_frames);
 
     // Set Algorithm
     switch(algorithm)
