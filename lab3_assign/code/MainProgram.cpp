@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
     char* input_file = argv[argc - 2];
     char* random_file = argv[argc - 1];
-    //Organizer org(input_file, random_file, ovalue, avalue, fvalue);
+    Organizer org(input_file, random_file, ovalue, avalue, fvalue);
 
     // cout << algorithm[0] << endl;
     // // Set Algorithm
