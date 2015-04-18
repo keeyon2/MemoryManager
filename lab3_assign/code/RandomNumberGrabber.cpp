@@ -1,6 +1,6 @@
 #include "RandomNumberGrabber.h"
 
-RandomNumberGrabber::RandomNumberGrabber(char* filename)
+RandomNumberGrabber::RandomNumberGrabber(string filename)
 {
     m_input_file = filename;
     stream.open(filename); 
@@ -14,7 +14,7 @@ RandomNumberGrabber::RandomNumberGrabber(char* filename)
     }
 }
 
-RandomNumberGrabber::RandomNumberGrabber(char* filename, int constant_random)
+RandomNumberGrabber::RandomNumberGrabber(string filename, int constant_random)
 {
     m_input_file = filename;
     stream.open(filename); 
@@ -33,6 +33,7 @@ int RandomNumberGrabber::grab_random()
     if (official_random_number == 0)
     {
         cout << "Error: mod# has to be greater than 0" << endl;
+        return -1;
     }
 
     else

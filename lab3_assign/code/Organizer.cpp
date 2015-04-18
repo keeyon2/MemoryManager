@@ -1,12 +1,10 @@
 #include "Organizer.h"
 
 Organizer::Organizer(char* input_file, char* random_file, char* options, char* algorithm,
-       int num_of_frames)
+       int num_of_frames) : MrRandom(random_file, num_of_frames)
 {
-        
     SetOptions(options);
-    MrRandom = new RandomNumberGrabber(random_file);
-    CreateInstructionVector();       
+    CreateInstructionVector(input_file);       
     // figure out options
     // Need to Create Page Table 
 }
@@ -38,42 +36,32 @@ void Organizer::SetOptions(char* options){
 
 }
 
-void Orgainzer::SetIndivOption(string all_ops, char c, bool* option)
+void Organizer::SetIndivOption(string all_ops, char c, bool* option)
 {
         int pos = all_ops.find(c);
-        if (pos != npos)
+        cout << "POS: " << pos << endl;
+        //if (pos != npos)
+        if (pos > -1)
         {
             *option = true;
         }
 }
 
-void Organizer::CreateInstructionVector() {
+void Organizer::CreateInstructionVector(char* input_file) {
     stream.open(input_file);
     ReadUntilInstruction();
     int read_write;
     int v_page;
+
     while(!PeekEnd())
     {
         read_write = ExtractNumber();
         v_page = ExtractNumber();
-        Instruction temp_inst = new Instruction(read_write, v_page);
+        Instruction temp_inst (read_write, v_page);
         instructions.push_back(temp_inst);
     }
 
-    cout << "   First 20 instructions   " << endl;
-    cout << "---------------------------" << endl; 
-    for (int i = 0; i < 20; i++)
-    {
-        cout << "Read: " << instructions[i].read << endl; 
-        cout << "Write: " << instructions[i].write << endl; 
-        cout << "Virtual Frame: " << instructions[i].virtual_frame << endl;
-    }
-
-    cout << " Last Guy " << endl;
-    cout << "----------" << endl;
-    cout << "Read: " << instructions[instructions.size() - 1].read << endl; 
-    cout << "Write: " << instructions[instructions.size() - 1].write << endl; 
-    cout << "Virtual Frame: " << instructions[instructions.size() - 1].virtual_frame << endl;
+    reverse(instructions.begin(), instructions.end());
 }
 
 Instruction Organizer::PopNextInstruction()
@@ -105,7 +93,7 @@ void Organizer::ReadUntilInstruction() {
         c = stream.peek();
         if (c == '#')
         {
-            ReadUntilNewLine();
+            ReadUntilNewline();
             ReadUntilCharacter();
         }
 
@@ -171,7 +159,7 @@ bool Organizer::PeekEnd() {
 }
 
 void Organizer::ReadUntilNewline() {
-    char c:
+    char c;
     while(!PeekEnd())
     {
         c = stream.get(c);

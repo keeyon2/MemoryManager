@@ -2,206 +2,103 @@
 #include <fstream>
 #include <sstream>
 #include <cstring>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "RandomNumberGrabber.h"
+#include "Organizer.h"
 
 using std::cout;
 using std::endl;
 using std::string;
 using std::ofstream;
 
-ofstream random_file;
-ofstream input_file;
-
 int main(int argc, char **argv)
 {
-    int c;
-    char *options = NULL;
-    
-    // We are setting the default values for when no args
-    int num_of_frames = 0;    
-    char *algorithm = NULL;
+  int aflag = 0;
+  int fvalue = 32;
+  char *avalue = NULL;
+  char *ovalue = NULL;
+  int index;
+  int c;
 
-    bool option_O = false, option_P = false, option_F = false,
-         option_S = false, option_p = false, option_f = false,
-         option_a = false, is_o = false;
+  opterr = 0;
+  while ((c = getopt (argc, argv, "a:f:o:")) != -1)
+    switch (c)
+      {
+      case 'a':
+        avalue = optarg;
+        aflag = 1;
+        break;
+      case 'f':
+        fvalue = atoi(optarg);
+        break;
+      case 'o':
+        ovalue = optarg;
+        break;
+      case '?':
+        if (optopt == 'o' || optopt == 'a' || optopt == 'f')
+          fprintf (stderr, "Option -%c requires an argument.\n", optopt);
+        else if (isprint (optopt))
+          fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+        else
+          fprintf (stderr,
+                   "Unknown option character `\\x%x'.\n",
+                   optopt);
+        return 1;
+      default:
+        abort ();
+      }
+  printf ("aflag = %d, avalue = %s, fvalue = %d, ovalue = %s\n",
+          aflag, avalue, fvalue, ovalue);
 
-    while ((c = getopt (argc, argv, "aof:")) != -1)
-    {
-        switch(c)
-        {
-            case 'a':
-                algorithm = optarg;
-                break;
-            case 'o':
-                is_o = true;
-                options = optarg;   
-                break;
-            case 'f':
-                num_of_frames = atoi (optarg); 
-                break;
-            case '?':
-                if (optopt == 'a' || optopt == 'f' || optopt == 'o')
-                {
-                    cout << "Option -" << optopt << " requires an argument" << endl;
-                    abourt ();
-                }
-                else
-                {
-                    cout << "Unknown option character -" << optopt << endl;
-                    abort ();
-                }
-                // Exit Prog
-                return 1;
-                abort();
-            default:
-                num_of_frames = 32;
-                algorithm = 'l';
-        }
-    }
+  for (index = optind; index < argc; index++)
+    printf ("Non-option argument %s\n", argv[index]);
+
     char* input_file = argv[argc - 2];
     char* random_file = argv[argc - 1];
+    //Organizer org(input_file, random_file, ovalue, avalue, fvalue);
 
+    // cout << algorithm[0] << endl;
+    // // Set Algorithm
+    // switch(algorithm[0])
+    // {
+    //     case 'N':
+    //         // Create NRU
+    //         break;
+    //     case 'l':
+    //         // Create LRU
+    //         break;
+    //     case 'r':
+    //         // Creat Random
+    //         break;
+    //     case 'f':
+    //         // Create FIFO
+    //         break;
+    //     case 's':
+    //         // Create Second Chance
+    //         break;
+    //     case 'c':
+    //         // Create Physical Clock
+    //         break;
+    //     case 'X':
+    //         // Create Virtual Clock
+    //         break;
+    //     case 'a':
+    //         // Create Aging
+    //         break;
+    //     case 'Y':
+    //         // Create Aging
+    //         break;
+    //     default:
+    //         cout << "Error:  not understandable algorithm selection" << endl;
+    //         break;
 
-    Organizer (input_file, random_file, options, algorithm, num_of_frames);
-
-    // Set Algorithm
-    switch(algorithm)
-    {
-        case 'N':
-            // Create NRU
-            break;
-        case 'l':
-            // Create LRU
-            break;
-        case 'r':
-            // Creat Random
-            break;
-        case 'f':
-            // Create FIFO
-            break;
-        case 's':
-            // Create Second Chance
-            break;
-        case 'c':
-            // Create Physical Clock
-            break;
-        case 'X':
-            // Create Virtual Clock
-            break;
-        case 'a':
-            // Create Aging
-            break;
-        case 'Y':
-            // Create Aging
-            break;
-        default:
-            cout << "Error:  not understandable algorithm selection" << endl;
-
-
-    }
+    // }
+    return 0;
     // Printing out to test
 }
 
-void ReadUntilInstruction() {
-    char c;
-    int instruct;
-    int read_write;
 
-    ReadUntilCharacter();
-
-    if (PeekEnd())
-    {
-        // Error
-    }
-
-    while(!PeekEnd())
-    {
-        c = stream.peek();
-        if (c == '#')
-        {
-            ReadUntilNewLine();
-            ReadUntilCharacter();
-        }
-
-        else if(isdigit(c))
-        {
-            return;
-        }
-    }
-}
-
-
-int ExtractNumber() {
-    string number;
-    char c;
-    ReadUntilCharacter();
-
-    // If we have readed End of the file Expect Number
-    if (PeekEnd())
-    {
-        //Error
-    }
-
-    while (!PeekEnd())
-    {
-        stream.get(c);
-        if ((c != ' ') && (c != '\t') && (c != '\n'))
-        {
-            if (!isdigit(c))
-            {
-
-                cout << "SHOULD BE DIGIT" << endl;
-            }
-
-            number += c;
-        }
-        else
-            break;
-    }
-    return atoi(number.c_str());
-}
-
-void ReadUntilCharacter(){
-    char c;
-    while(!PeekEnd())
-    {
-        c = stream.peek();
-        if ((c == ' ') || (c == '\t') || (c == '\n'))
-        {
-            stream.get(c);
-        }
-        else
-            return;
-    }
-    if (PeekEnd())
-    {
-        //Reset to the start of the file
-        return;
-    }
-}
-
-bool Scheduler::PeekEnd() {
-    return (stream.peek(), stream.eof());
-}
-
-void ReadUntilNewline() {
-    char c:
-    while(!PeekEnd())
-    {
-        c = stream.get(c);
-        if (c != '\n')
-        {
-            stream.get(c);
-        }
-        else
-            return;
-    }
-    if(PeekEnd())
-    {
-        return;
-    }
-}

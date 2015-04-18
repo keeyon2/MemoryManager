@@ -26,7 +26,8 @@ class RandomNumberGrabber
     ifstream stream;
     vector<int> random_numbers;
     public:
-        RandomNumberGrabber(char* filename);
+        RandomNumberGrabber(string filename);
+        RandomNumberGrabber(string filename, int constant_random);
         int grab_random();
         int myrandom(int burst);
         void ReadUntilCharacter();

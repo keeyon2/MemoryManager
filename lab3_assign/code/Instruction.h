@@ -15,8 +15,11 @@ using std::vector;
 
 class Instruction
 {
-    unsigned int virtual_frame;
-    bool read;
-    bool write;
-    Instruction(int read_write, int virtual_frame); 
-}
+    public:
+        int virtual_frame;
+        bool read;
+        bool write;
+        Instruction(int read_write, int virtual_frame); 
+};
+
+#endif
