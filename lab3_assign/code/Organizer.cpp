@@ -4,11 +4,13 @@ Organizer::Organizer(char* input_file, char* random_file, char* options, char* a
        int num_of_frames) : MrRandom(random_file, num_of_frames)
 {
     // Initializations
+    current_inst = -1;
     frame_table_size = num_of_frames;
     SetOptions(options);
+    SetAlgorithm(algorithm);
     CreateInstructionVector(input_file);       
     CreateTables();    
-
+    
     // Logic
     RunThroughInstructions();
 }
@@ -46,6 +48,34 @@ void Organizer::SetOptions(char* options){
 
 }
 
+void Organizer::SetAlgorithm(char* algorithm){
+    // Set all the frame tables
+    fifo_alg.SetFrameTable(&frame_table);
+
+    // Determine which one it should be
+    if (algorithm != NULL)
+    {
+        string alg = string(algorithm);
+        // 'l' should be something else but it is ok for now
+        if (alg == "l")
+        {
+            replacement_alg = &fifo_alg;
+        }
+
+        if (alg == "f")
+        {
+            replacement_alg = &fifo_alg;
+        }
+    }   
+
+    else
+    {
+        // Do the same as 'l'
+        replacement_alg = &fifo_alg;
+    }
+}
+
+
 void Organizer::SetIndivOption(string all_ops, char c, bool* option)
 {
         int pos = all_ops.find(c);
@@ -77,7 +107,7 @@ void Organizer::RunThroughInstructions() {
     while (!instructions.empty())
     {
         current_inst += 1;
-        Intrunction inst = GetInstruction();
+        Instruction inst = GetInstruction();
 
         //Print O
         if (option_O)
@@ -96,16 +126,17 @@ void Organizer::RunThroughInstructions() {
         // If Present in RAM
         if (page_table[v_index].present)
         {
-            ACCESS(inst); 
+            int phys_frame = page_table[v_index].page_index;
+            ACCESS(inst, phys_frame); 
         } 
 
-        // Not Present
+        // Inst Not Present in RAM (Pagefault)
         else
         {
             int avail_fr = -1;
-            for (int i = 0; i < frame_table_size.size(); i++)
+            for (int i = 0; i < frame_table_size; i++)
             {
-                if (!frame_table.entries)
+                if (!frame_table.entries[i])
                 {
                     avail_fr = i;
                     break;
@@ -115,13 +146,59 @@ void Organizer::RunThroughInstructions() {
             // Have Available Spot in Ram at avail_fr
             if (avail_fr >= 0)
             {
-                ZERO(inst, avail_fr);
-                MAP(inst, avail_fr);
+                BringInstToRam(inst, avail_fr);
             }
 
+            // Need to replace Element from Ram  
+            else
+            {
+                int delete_phys_frame = replacement_alg->GetReplacement();
+                int deleting_v_frame = FindDeletingVPage(delete_phys_frame);
+
+                // Take element of RAM
+                UNMAP(inst, delete_phys_frame, deleting_v_frame);
+
+                // Check if it was dirty or not
+                if (page_table[inst.virtual_frame].mod)
+                {
+                    OUT(inst, delete_phys_frame, deleting_v_frame);
+                }
+
+                // Replace with new inst
+                BringInstToRam(inst, delete_phys_frame); 
+            }
         }
     }
 }
+
+void Organizer::BringInstToRam(Instruction inst, int phys_frame_location) {
+
+    // if true IN operation 
+    if (page_table[inst.virtual_frame].p_out)
+    {
+        IN(inst, phys_frame_location);
+    }
+
+    // else do a ZERO
+    else
+    {
+        ZERO(inst, phys_frame_location);
+    }
+
+    MAP(inst, phys_frame_location);
+}
+
+int Organizer::FindDeletingVPage(int phys_frame){
+    int return_frame;
+    for (int i = 0; i < 64; i++)
+    {
+        if (page_table[i].present == 1 && page_table[i].page_index == phys_frame)
+            return i;
+    }
+    cout << "Never found entry in Page entry with present and correct phy frame" << endl;
+    return -1;
+}
+
 
 Instruction Organizer::GetInstruction() {
     Instruction temp = instructions.back();
@@ -129,10 +206,26 @@ Instruction Organizer::GetInstruction() {
     return temp;
 }
 
-void Organizer::UNMAP(Instruction inst) {
+// Remove from Frame Table
+void Organizer::UNMAP(Instruction inst, int phys_frame, int prev_v_frame) {
 
     total_unmap += 1;
     total_cycles += 400;
+
+    // Update Frame Table
+    frame_table.entries[phys_frame] = false;
+
+    
+    // Update Page Table Present field
+    page_table[prev_v_frame].present = false;
+
+    if (option_O)
+    {
+        cout << current_inst << ": UNMAP   " << prev_v_frame << 
+            "   " << phys_frame << endl;
+    } 
+
+    replacement_alg->UNMAP_Called(inst, phys_frame, prev_v_frame);
 }
 
 void Organizer::MAP(Instruction inst, int phys_frame) {
@@ -145,24 +238,54 @@ void Organizer::MAP(Instruction inst, int phys_frame) {
 
     if (option_O)
     {
-        cout << current_inst << ": MAP      " << phys_frame << endl; 
+        cout << current_inst << ": MAP     " << inst.virtual_frame << 
+            "   " << phys_frame << endl;
     } 
+
+    replacement_alg->MAP_Called(inst, phys_frame);
 }
 
-void Organizer::IN(Instruction inst) {
+void Organizer::IN(Instruction inst, int phys_frame) {
     total_in += 1;
     total_cycles += 3000;
+
+    // This is done on IN and ZERO
+    page_table[inst.virtual_frame].ref = 0;
+    page_table[inst.virtual_frame].mod = 0;
+
+    if (option_O)
+    {
+        cout << current_inst << ": IN      " << inst.virtual_frame << 
+            "   " << phys_frame << endl;
+    } 
+
+    replacement_alg->IN_Called(inst, phys_frame);
 }
 
-void Organizer::OUT(Instruction inst) {
+void Organizer::OUT(Instruction inst, int phys_frame, int prev_v_frame) {
     total_out += 1;
     total_cycles += 3000;
+
+    // Set paged out to true
+    page_table[prev_v_frame].p_out = 1;
+
+    if (option_O)
+    {
+        cout << current_inst << ": OUT     " << prev_v_frame << 
+            "   " << phys_frame << endl;
+    }
+
+    replacement_alg->OUT_Called(inst, phys_frame, prev_v_frame);
 }
 
 void Organizer::ZERO(Instruction inst, int phys_frame) {
     total_zero += 1;
     total_cycles += 150;
-    v_index = inst.virtual_frame;
+    int v_index = inst.virtual_frame;
+
+    // This is done on IN and ZERO
+    page_table[v_index].ref = 0;
+    page_table[v_index].mod = 0;
 
     page_table[v_index].present = 0;
     page_table[v_index].p_out = 0;
@@ -172,17 +295,20 @@ void Organizer::ZERO(Instruction inst, int phys_frame) {
         cout << current_inst << ": ZERO        " << phys_frame << endl;
     }
 
+    replacement_alg->ZERO_Called(inst, phys_frame);
 }
 
-void Organizer::ACCESS(Instruction inst) {
+void Organizer::ACCESS(Instruction inst, int phys_frame) {
     total_cycles += 1;
 
-    v_index = inst.virtual_frame;
+    int v_index = inst.virtual_frame;
     if(inst.write)
     {
-        page_table[v_index].write = 1;
+        page_table[v_index].mod = 1;
     }
-    page_table[v_index].read = 1;
+    page_table[v_index].ref = 1;
+
+    replacement_alg->ACCESS_Called(inst, phys_frame);
 }
 
 /****************

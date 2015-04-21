@@ -12,6 +12,9 @@
 #include "RandomNumberGrabber.h"
 #include "PageTableEntry.h"
 #include "FrameTable.h"
+#include "ReplaceAlg.h"
+#include "FIFOalg.h"
+
 
 using std::cout;
 using std::endl;
@@ -27,10 +30,14 @@ class Organizer
         long total_map, total_unmap, total_in, 
              total_out, total_zero, total_cycles;
         ifstream stream; 
+
+        ReplaceAlg* replacement_alg;
+        FIFOalg fifo_alg;
+
         RandomNumberGrabber MrRandom;
         vector<Instruction> instructions;
         int frame_table_size;
-        int current_inst = -1;
+        int current_inst;
         PageTableEntry page_table[64];
         FrameTable frame_table;
         bool option_O, option_P, option_F, option_S,
@@ -43,19 +50,22 @@ class Organizer
                     int num_of_frames);
 
         void SetOptions(char* options);
+        void SetAlgorithm(char* algorithm);
         void SetIndivOption(string all_ops, char c, bool* option);
         void CreateInstructionVector(char* input_file);
         void CreateTables();
         void RunThroughInstructions();
         Instruction GetInstruction();
+        void BringInstToRam(Instruction inst, int phys_frame_location);
+        int FindDeletingVPage(int phys_frame);
 
         // Operations
-        void UNMAP(Instruction inst);
+        void UNMAP(Instruction inst, int phys_frame, int prev_v_frame);
         void MAP(Instruction inst, int phys_frame);
-        void IN(Instruction inst);
-        void OUT(Instruction inst);
+        void IN(Instruction inst, int phys_frame);
+        void OUT(Instruction inst, int phys_frame, int prev_v_frame);
         void ZERO(Instruction inst, int phys_frame);
-        void ACCESS(Instruction ints);
+        void ACCESS(Instruction ints, int phys_frame);
 
         void ReadUntilInstruction();
         int ExtractNumber();
