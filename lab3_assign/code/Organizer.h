@@ -56,7 +56,11 @@ class Organizer
         void CreateInstructionVector(char* input_file);
         void CreateTables();
         void RunThroughInstructions();
+
+        // Prints
         void PrintResults();
+        void PrintFrameTable();
+        void PrintPageTable();
 
         Instruction GetInstruction();
         void BringInstToRam(Instruction inst, int phys_frame_location);

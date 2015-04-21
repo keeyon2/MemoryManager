@@ -177,16 +177,111 @@ void Organizer::RunThroughInstructions() {
 
         int p_frame = page_table[v_index].page_index;
         ACCESS(inst, p_frame); 
+
+        if (option_p)
+            PrintPageTable();
+
+        if (option_f)
+            PrintFrameTable();
     }
+
 }
 
 
 void Organizer::PrintResults(){
-    int inst_count = current_inst + 1;
-    printf("SUM %d U=%d M=%d I=%d O=%d Z=%d ===> %llu\n",
- inst_count, total_unmap, total_map, total_in, total_out, total_zero, total_cycles);
+    if (option_P)
+    {
+        PrintPageTable();
+    }
 
-    //Need to check options here
+    if (option_F)
+    {
+        PrintFrameTable();
+    }
+
+    if (option_S)
+    {
+
+        int inst_count = current_inst + 1;
+        printf("SUM %d U=%d M=%d I=%d O=%d Z=%d ===> %llu\n",
+            inst_count, total_unmap, total_map, total_in, total_out, 
+            total_zero, total_cycles);
+    }
+}
+
+void Organizer::PrintFrameTable(){
+
+    for (int i = 0; i < frame_table_size; i++)
+    {
+        if (frame_table.entries[i] == false)
+        {
+            cout << "* ";
+        }    
+        else
+        {
+            int v_page = FindDeletingVPage(i);
+            cout << v_page << " ";
+        }
+    }
+
+    cout << endl;
+}
+
+void Organizer::PrintPageTable(){
+
+    for (int i = 0; i < 64; i++)
+    {
+        if (page_table[i].present)
+        {
+            int r,m,s;
+            char rc, mc, sc;
+            r = page_table[i].ref;
+            m = page_table[i].mod;
+            s = page_table[i].p_out; 
+            
+            if (r == 1)
+            {
+                rc = 'R';
+            }
+            else
+            {
+                rc = '-';
+            }
+
+            if (m == 1)
+            {
+                mc = 'M';
+            }
+            else
+            {
+                mc = '-';
+            }
+
+            if (s == 1)
+            {
+                sc = 'S';
+            }
+            else
+            {
+                sc = '-';
+            }
+            cout << i << ":" << rc << mc << sc << " ";
+        } 
+        
+        else
+        {
+            if (page_table[i].p_out)
+            {
+                cout << "# ";
+            }
+            else
+            {
+                cout << "* ";
+            }
+        }
+    }
+
+    cout << endl;
 }
 
 void Organizer::BringInstToRam(Instruction inst, int phys_frame_location) {
