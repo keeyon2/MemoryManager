@@ -27,8 +27,9 @@ class Organizer
 {
     public:
 
-        long total_map, total_unmap, total_in, 
-             total_out, total_zero, total_cycles;
+        int total_map, total_unmap, total_in, 
+             total_out, total_zero;
+        unsigned long long total_cycles;
         ifstream stream; 
 
         ReplaceAlg* replacement_alg;
@@ -55,10 +56,12 @@ class Organizer
         void CreateInstructionVector(char* input_file);
         void CreateTables();
         void RunThroughInstructions();
+        void PrintResults();
+
         Instruction GetInstruction();
         void BringInstToRam(Instruction inst, int phys_frame_location);
         int FindDeletingVPage(int phys_frame);
-
+        
         // Operations
         void UNMAP(Instruction inst, int phys_frame, int prev_v_frame);
         void MAP(Instruction inst, int phys_frame);

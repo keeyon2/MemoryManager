@@ -13,6 +13,9 @@ Organizer::Organizer(char* input_file, char* random_file, char* options, char* a
     
     // Logic
     RunThroughInstructions();
+
+    // PrintFinalResults
+    PrintResults();
 }
 
 void Organizer::CreateTables()
@@ -123,15 +126,18 @@ void Organizer::RunThroughInstructions() {
         
         v_index = inst.virtual_frame;
         
-        // If Present in RAM
-        if (page_table[v_index].present)
-        {
-            int phys_frame = page_table[v_index].page_index;
-            ACCESS(inst, phys_frame); 
-        } 
+        // // If Present in RAM
+        // if (page_table[v_index].present)
+        // {
+        //     int phys_frame = page_table[v_index].page_index;
+        //     ACCESS(inst, phys_frame); 
+        // } 
+
+        // // Inst Not Present in RAM (Pagefault)
+        // else
 
         // Inst Not Present in RAM (Pagefault)
-        else
+        if (!page_table[v_index].present)
         {
             int avail_fr = -1;
             for (int i = 0; i < frame_table_size; i++)
@@ -168,7 +174,19 @@ void Organizer::RunThroughInstructions() {
                 BringInstToRam(inst, delete_phys_frame); 
             }
         }
+
+        int p_frame = page_table[v_index].page_index;
+        ACCESS(inst, p_frame); 
     }
+}
+
+
+void Organizer::PrintResults(){
+    int inst_count = current_inst + 1;
+    printf("SUM %d U=%d M=%d I=%d O=%d Z=%d ===> %llu\n",
+ inst_count, total_unmap, total_map, total_in, total_out, total_zero, total_cycles);
+
+    //Need to check options here
 }
 
 void Organizer::BringInstToRam(Instruction inst, int phys_frame_location) {
