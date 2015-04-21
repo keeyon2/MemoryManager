@@ -165,7 +165,7 @@ void Organizer::RunThroughInstructions() {
                 UNMAP(inst, delete_phys_frame, deleting_v_frame);
 
                 // Check if it was dirty or not
-                if (page_table[inst.virtual_frame].mod)
+                if (page_table[deleting_v_frame].mod)
                 {
                     OUT(inst, delete_phys_frame, deleting_v_frame);
                 }
