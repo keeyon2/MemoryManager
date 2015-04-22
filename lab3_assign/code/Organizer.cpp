@@ -54,6 +54,7 @@ void Organizer::SetOptions(char* options){
 void Organizer::SetAlgorithm(char* algorithm){
     // Set all the frame tables
     fifo_alg.SetFrameTable(&frame_table);
+    sc_alg.SetFrameTable(&frame_table);
 
     // Determine which one it should be
     if (algorithm != NULL)
@@ -65,10 +66,16 @@ void Organizer::SetAlgorithm(char* algorithm){
             replacement_alg = &fifo_alg;
         }
 
-        if (alg == "f")
+        else if (alg == "f")
         {
             replacement_alg = &fifo_alg;
         }
+
+        else if (alg == "s" || alg == "c")
+        {
+            replacement_alg = &sc_alg;
+        }
+
     }   
 
     else
@@ -93,9 +100,17 @@ void Organizer::CreateInstructionVector(char* input_file) {
     ReadUntilInstruction();
     int read_write;
     int v_page;
+    char c;
+    char d_me[256];
 
     while(!PeekEnd())
     {
+        c = stream.peek();
+        if (c == '#')
+        {
+            stream.getline(d_me, 256);
+            continue;
+        }
         read_write = ExtractNumber();
         v_page = ExtractNumber();
         Instruction temp_inst (read_write, v_page);
@@ -430,10 +445,11 @@ void Organizer::ACCESS(Instruction inst, int phys_frame) {
 
 void Organizer::ReadUntilInstruction() {
     char c;
+    char d_me[256];
     int instruct;
     int read_write;
 
-    ReadUntilCharacter();
+    //ReadUntilCharacter();
 
     if (PeekEnd())
     {
@@ -445,14 +461,21 @@ void Organizer::ReadUntilInstruction() {
         c = stream.peek();
         if (c == '#')
         {
-            ReadUntilNewline();
-            ReadUntilCharacter();
+            //stream.ignore(256, '\n');
+            stream.getline(d_me, 256);
+            //c = stream.peek();
+            //cout << d_me << endl;
+            //cout << "Peek: " << c << endl;
+            //ReadUntilNewline();
+            //ReadUntilCharacter();
         }
 
-        else if(isdigit(c))
-        {
+        // else if(isdigit(c))
+        // {
+        //     return;
+        // }
+        else
             return;
-        }
     }
 }
 
@@ -460,8 +483,10 @@ void Organizer::ReadUntilInstruction() {
 int Organizer::ExtractNumber() {
     string number;
     char c;
+    char d_me[256];
     ReadUntilCharacter();
-
+    // Check if commented line
+    ReadUntilInstruction();
     // If we have readed End of the file Expect Number
     if (PeekEnd())
     {
@@ -471,12 +496,16 @@ int Organizer::ExtractNumber() {
     while (!PeekEnd())
     {
         stream.get(c);
+        if (c == '#')
+        {
+
+        }
         if ((c != ' ') && (c != '\t') && (c != '\n'))
         {
             if (!isdigit(c))
             {
 
-                cout << "SHOULD BE DIGIT" << endl;
+                cout << "SHOULD BE DIGIT: " << c << endl;
             }
 
             number += c;

@@ -14,6 +14,7 @@
 #include "FrameTable.h"
 #include "ReplaceAlg.h"
 #include "FIFOalg.h"
+#include "SCalg.h"
 
 
 using std::cout;
@@ -34,6 +35,7 @@ class Organizer
 
         ReplaceAlg* replacement_alg;
         FIFOalg fifo_alg;
+        SCalg sc_alg;
 
         RandomNumberGrabber MrRandom;
         vector<Instruction> instructions;

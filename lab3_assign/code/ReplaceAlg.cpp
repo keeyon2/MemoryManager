@@ -16,6 +16,21 @@ int ReplaceAlg::GetReplacement(){
     return -1;
 }
 
+int ReplaceAlg::PresentVPageOfPhysFrame(int phys_frame)
+{
+    int size = 64;
+    int present;
+    int page_index;
+    for (int i = 0; i < size; i++)
+    {
+        present = frame_table->page_table[i].present; 
+        page_index = frame_table->page_table[i].page_index;
+        if (page_index == phys_frame && present == 1)
+            return i;
+    } 
+    return -1;
+}
+
 void ReplaceAlg::ACCESS_Called(Instruction inst, int phys_frame){
 }
 

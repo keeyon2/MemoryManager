@@ -16,6 +16,7 @@ class ReplaceAlg
         ReplaceAlg();
         ReplaceAlg(FrameTable* ft);
         void SetFrameTable(FrameTable* ft); 
+        int PresentVPageOfPhysFrame(int phys_frame);
         virtual int GetReplacement(); // This returns int of which frame Table Entry
         virtual void ACCESS_Called(Instruction inst, int phys_frame);
         virtual void MAP_Called(Instruction inst, int phys_frame);
