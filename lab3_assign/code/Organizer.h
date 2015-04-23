@@ -16,6 +16,7 @@
 #include "FIFOalg.h"
 #include "SCalg.h"
 #include "VClockAlg.h"
+#include "RandomAlg.h"
 
 
 using std::cout;
@@ -38,14 +39,16 @@ class Organizer
         FIFOalg fifo_alg;
         SCalg sc_alg;
         VClockAlg vc_alg;
+        RandomAlg rand_alg;
 
         RandomNumberGrabber MrRandom;
+        FrameTable frame_table;
+
         vector<Instruction> instructions;
         int frame_table_size;
         long current_inst;
 
         PageTableEntry page_table[64];
-        FrameTable frame_table;
         bool option_O, option_P, option_F, option_S,
              option_p, option_f, option_a, is_o;
         

@@ -11,6 +11,12 @@ void ReplaceAlg::SetFrameTable(FrameTable* ft){
     frame_table = ft;
 }
 
+void ReplaceAlg::SetFrameAndRandom(FrameTable* ft, RandomNumberGrabber* rg){
+    frame_table = ft;
+    random_grabber = rg;
+}
+
+
 int ReplaceAlg::GetReplacement(){
     cout << "Please Don't Print this" << endl;
     return -1;
