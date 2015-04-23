@@ -55,6 +55,7 @@ void Organizer::SetAlgorithm(char* algorithm){
     // Set all the frame tables
     fifo_alg.SetFrameTable(&frame_table);
     sc_alg.SetFrameTable(&frame_table);
+    vc_alg.SetFrameTable(&frame_table);
 
     // Determine which one it should be
     if (algorithm != NULL)
@@ -76,6 +77,10 @@ void Organizer::SetAlgorithm(char* algorithm){
             replacement_alg = &sc_alg;
         }
 
+        else if (alg == "X")
+        {
+            replacement_alg = &vc_alg;
+        }
     }   
 
     else

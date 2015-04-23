@@ -15,6 +15,7 @@
 #include "ReplaceAlg.h"
 #include "FIFOalg.h"
 #include "SCalg.h"
+#include "VClockAlg.h"
 
 
 using std::cout;
@@ -36,6 +37,7 @@ class Organizer
         ReplaceAlg* replacement_alg;
         FIFOalg fifo_alg;
         SCalg sc_alg;
+        VClockAlg vc_alg;
 
         RandomNumberGrabber MrRandom;
         vector<Instruction> instructions;
