@@ -108,24 +108,26 @@ void Organizer::SetIndivOption(string all_ops, char c, bool* option)
 
 void Organizer::CreateInstructionVector(char* input_file) {
     stream.open(input_file);
-    ReadUntilInstruction();
+    //ReadUntilInstruction();
     int read_write;
     int v_page;
     char c;
-    char d_me[256];
+    string line;
 
     while(!PeekEnd())
     {
         c = stream.peek();
-        if (c == '#')
+        if (!isdigit(c))
         {
-            stream.getline(d_me, 256);
-            continue;
+            getline(stream, line);
         }
-        read_write = ExtractNumber();
-        v_page = ExtractNumber();
-        Instruction temp_inst (read_write, v_page);
-        instructions.push_back(temp_inst);
+        else
+        {
+            read_write = ExtractNumber();
+            v_page = ExtractNumber();
+            Instruction temp_inst (read_write, v_page);
+            instructions.push_back(temp_inst);
+        }
     }
 
     reverse(instructions.begin(), instructions.end());
@@ -360,9 +362,6 @@ void Organizer::UNMAP(Instruction inst, int phys_frame, int prev_v_frame) {
 
     if (option_O)
     {
-        // cout << current_inst << ": UNMAP   " << prev_v_frame << 
-        //     "   " << phys_frame << endl;
-
         printf("%ld: UNMAP %3d %3d\n", current_inst, prev_v_frame, phys_frame);
     } 
 
@@ -379,8 +378,6 @@ void Organizer::MAP(Instruction inst, int phys_frame) {
 
     if (option_O)
     {
-        // cout << current_inst << ": MAP     " << inst.virtual_frame << 
-        //     "   " << phys_frame << endl;
         printf("%ld: MAP %5d %3d\n", current_inst, inst.virtual_frame, phys_frame);
     } 
 
@@ -397,9 +394,6 @@ void Organizer::IN(Instruction inst, int phys_frame) {
 
     if (option_O)
     {
-        // cout << current_inst << ": IN      " << inst.virtual_frame << 
-        //     "   " << phys_frame << endl;
-
         printf("%ld: IN %6d %3d\n", current_inst, inst.virtual_frame, phys_frame);
     } 
 
@@ -415,9 +409,6 @@ void Organizer::OUT(Instruction inst, int phys_frame, int prev_v_frame) {
 
     if (option_O)
     {
-        // cout << current_inst << ": OUT     " << prev_v_frame << 
-        //     "   " << phys_frame << endl;
-
         printf("%ld: OUT %5d %3d\n", current_inst, prev_v_frame, phys_frame);
     }
 
@@ -438,8 +429,6 @@ void Organizer::ZERO(Instruction inst, int phys_frame) {
 
     if (option_O)
     {
-        //cout << current_inst << ": ZERO        " << phys_frame << endl;
-
         printf("%ld: ZERO %8d\n", current_inst, phys_frame);
     }
 
@@ -465,7 +454,7 @@ void Organizer::ACCESS(Instruction inst, int phys_frame) {
 
 void Organizer::ReadUntilInstruction() {
     char c;
-    char d_me[256];
+    char d_me[1000];
     int instruct;
     int read_write;
 
@@ -482,7 +471,7 @@ void Organizer::ReadUntilInstruction() {
         if (c == '#')
         {
             //stream.ignore(256, '\n');
-            stream.getline(d_me, 256);
+            stream.getline(d_me, 1000);
             //c = stream.peek();
             //cout << d_me << endl;
             //cout << "Peek: " << c << endl;
@@ -495,6 +484,7 @@ void Organizer::ReadUntilInstruction() {
         //     return;
         // }
         else
+            cout << "First Dig: " << c << endl;
             return;
     }
 }
@@ -506,7 +496,7 @@ int Organizer::ExtractNumber() {
     char d_me[256];
     ReadUntilCharacter();
     // Check if commented line
-    ReadUntilInstruction();
+    //ReadUntilInstruction();
     // If we have readed End of the file Expect Number
     if (PeekEnd())
     {
@@ -518,14 +508,19 @@ int Organizer::ExtractNumber() {
         stream.get(c);
         if (c == '#')
         {
-
+            cout << "Extract Number but starting at #" << endl;
+            stream.getline(d_me, 256);
+            continue;
         }
+
         if ((c != ' ') && (c != '\t') && (c != '\n'))
         {
             if (!isdigit(c))
             {
 
                 cout << "SHOULD BE DIGIT: " << c << endl;
+                cout << "But is: " << c << endl;
+                return -2;
             }
 
             number += c;

@@ -25,6 +25,7 @@ using std::string;
 using std::ifstream;
 using std::vector;
 using std::reverse;
+using std::getline;
 
 class Organizer
 {
