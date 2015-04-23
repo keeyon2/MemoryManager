@@ -354,8 +354,10 @@ void Organizer::UNMAP(Instruction inst, int phys_frame, int prev_v_frame) {
 
     if (option_O)
     {
-        cout << current_inst << ": UNMAP   " << prev_v_frame << 
-            "   " << phys_frame << endl;
+        // cout << current_inst << ": UNMAP   " << prev_v_frame << 
+        //     "   " << phys_frame << endl;
+
+        printf("%ld: UNMAP %3d %3d\n", current_inst, prev_v_frame, phys_frame);
     } 
 
     replacement_alg->UNMAP_Called(inst, phys_frame, prev_v_frame);
@@ -371,8 +373,9 @@ void Organizer::MAP(Instruction inst, int phys_frame) {
 
     if (option_O)
     {
-        cout << current_inst << ": MAP     " << inst.virtual_frame << 
-            "   " << phys_frame << endl;
+        // cout << current_inst << ": MAP     " << inst.virtual_frame << 
+        //     "   " << phys_frame << endl;
+        printf("%ld: MAP %5d %3d\n", current_inst, inst.virtual_frame, phys_frame);
     } 
 
     replacement_alg->MAP_Called(inst, phys_frame);
@@ -388,8 +391,10 @@ void Organizer::IN(Instruction inst, int phys_frame) {
 
     if (option_O)
     {
-        cout << current_inst << ": IN      " << inst.virtual_frame << 
-            "   " << phys_frame << endl;
+        // cout << current_inst << ": IN      " << inst.virtual_frame << 
+        //     "   " << phys_frame << endl;
+
+        printf("%ld: IN %6d %3d\n", current_inst, inst.virtual_frame, phys_frame);
     } 
 
     replacement_alg->IN_Called(inst, phys_frame);
@@ -404,8 +409,10 @@ void Organizer::OUT(Instruction inst, int phys_frame, int prev_v_frame) {
 
     if (option_O)
     {
-        cout << current_inst << ": OUT     " << prev_v_frame << 
-            "   " << phys_frame << endl;
+        // cout << current_inst << ": OUT     " << prev_v_frame << 
+        //     "   " << phys_frame << endl;
+
+        printf("%ld: OUT %5d %3d\n", current_inst, prev_v_frame, phys_frame);
     }
 
     replacement_alg->OUT_Called(inst, phys_frame, prev_v_frame);
@@ -425,7 +432,9 @@ void Organizer::ZERO(Instruction inst, int phys_frame) {
 
     if (option_O)
     {
-        cout << current_inst << ": ZERO        " << phys_frame << endl;
+        //cout << current_inst << ": ZERO        " << phys_frame << endl;
+
+        printf("%ld: ZERO %8d\n", current_inst, phys_frame);
     }
 
     replacement_alg->ZERO_Called(inst, phys_frame);

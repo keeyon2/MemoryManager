@@ -42,7 +42,8 @@ class Organizer
         RandomNumberGrabber MrRandom;
         vector<Instruction> instructions;
         int frame_table_size;
-        int current_inst;
+        long current_inst;
+
         PageTableEntry page_table[64];
         FrameTable frame_table;
         bool option_O, option_P, option_F, option_S,
