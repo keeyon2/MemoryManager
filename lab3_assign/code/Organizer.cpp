@@ -57,6 +57,7 @@ void Organizer::SetAlgorithm(char* algorithm){
     sc_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
     vc_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
     rand_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
+    lru_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
     
     // Determine which one it should be
     if (algorithm != NULL)
@@ -65,7 +66,7 @@ void Organizer::SetAlgorithm(char* algorithm){
         // 'l' should be something else but it is ok for now
         if (alg == "l")
         {
-            replacement_alg = &fifo_alg;
+            replacement_alg = &lru_alg;
         }
 
         else if (alg == "f")
@@ -92,7 +93,7 @@ void Organizer::SetAlgorithm(char* algorithm){
     else
     {
         // Do the same as 'l'
-        replacement_alg = &fifo_alg;
+        replacement_alg = &lru_alg;
     }
 }
 

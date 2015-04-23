@@ -17,7 +17,7 @@
 #include "SCalg.h"
 #include "VClockAlg.h"
 #include "RandomAlg.h"
-
+#include "LRUalg.h"
 
 using std::cout;
 using std::endl;
@@ -41,6 +41,7 @@ class Organizer
         SCalg sc_alg;
         VClockAlg vc_alg;
         RandomAlg rand_alg;
+        LRUalg lru_alg;
 
         RandomNumberGrabber MrRandom;
         FrameTable frame_table;

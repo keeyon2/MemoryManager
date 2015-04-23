@@ -20,4 +20,3 @@ void FIFOalg::MAP_Called(Instruction inst, int phys_frame){
 void FIFOalg::UNMAP_Called(Instruction inst, int phys_frame, int prev_v_frame){
     p_frames.erase(p_frames.begin());
 }
-
