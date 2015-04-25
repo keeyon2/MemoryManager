@@ -11,9 +11,10 @@ void ReplaceAlg::SetFrameTable(FrameTable* ft){
     frame_table = ft;
 }
 
-void ReplaceAlg::SetFrameAndRandom(FrameTable* ft, RandomNumberGrabber* rg){
+void ReplaceAlg::SetFrameAndRandom(FrameTable* ft, RandomNumberGrabber* rg, bool a){
     frame_table = ft;
     random_grabber = rg;
+    option_a = a;
 }
 
 

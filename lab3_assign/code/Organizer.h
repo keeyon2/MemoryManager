@@ -18,6 +18,7 @@
 #include "VClockAlg.h"
 #include "RandomAlg.h"
 #include "LRUalg.h"
+#include "NRUalg.h"
 
 using std::cout;
 using std::endl;
@@ -42,6 +43,7 @@ class Organizer
         VClockAlg vc_alg;
         RandomAlg rand_alg;
         LRUalg lru_alg;
+        NRUalg nru_alg;
 
         RandomNumberGrabber MrRandom;
         FrameTable frame_table;

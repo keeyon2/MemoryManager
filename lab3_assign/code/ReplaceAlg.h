@@ -13,13 +13,14 @@ using std::endl;
 class ReplaceAlg
 {
     public:
+        bool option_a;
         FrameTable* frame_table;
         RandomNumberGrabber* random_grabber;
         ReplaceAlg();
         ReplaceAlg(FrameTable* ft);
         void SetFrameTable(FrameTable* ft); 
         void SetRandomGrabber(RandomNumberGrabber* rg);
-        void SetFrameAndRandom(FrameTable* ft, RandomNumberGrabber* rg);
+        void SetFrameAndRandom(FrameTable* ft, RandomNumberGrabber* rg, bool a);
         int PresentVPageOfPhysFrame(int phys_frame);
         virtual int GetReplacement(); // This returns int of which frame Table Entry
         virtual void ACCESS_Called(Instruction inst, int phys_frame);

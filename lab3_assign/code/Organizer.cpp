@@ -53,12 +53,13 @@ void Organizer::SetOptions(char* options){
 
 void Organizer::SetAlgorithm(char* algorithm){
     // Set all the frame tables
-    fifo_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
-    sc_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
-    vc_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
-    rand_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
-    lru_alg.SetFrameAndRandom(&frame_table, &MrRandom); 
-    
+    fifo_alg.SetFrameAndRandom(&frame_table, &MrRandom, option_a); 
+    sc_alg.SetFrameAndRandom(&frame_table, &MrRandom, option_a); 
+    vc_alg.SetFrameAndRandom(&frame_table, &MrRandom, option_a); 
+    rand_alg.SetFrameAndRandom(&frame_table, &MrRandom, option_a); 
+    lru_alg.SetFrameAndRandom(&frame_table, &MrRandom, option_a); 
+    nru_alg.SetFrameAndRandom(&frame_table, &MrRandom, option_a); 
+
     // Determine which one it should be
     if (algorithm != NULL)
     {
@@ -87,6 +88,11 @@ void Organizer::SetAlgorithm(char* algorithm){
         else if(alg == "r")
         {
             replacement_alg = &rand_alg;
+        }
+
+        else if(alg == "N")
+        {
+            replacement_alg = &nru_alg;
         }
     }   
 
